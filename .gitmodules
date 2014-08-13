@@ -1,0 +1,4 @@
+[submodule "instajam"]
+	path = js/instajam
+	url = https://github.com/mikefowler/instajam.git
+	branch = multiple-instances

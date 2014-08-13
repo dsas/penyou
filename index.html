@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Photos near you</title>
+    <script src="js/instajam/dist/instajam.js"></script>
+    <script>
+        'use strict';
+        var photoWrapper;
+        document.addEventListener("DOMContentLoaded", function() {
+            photoWrapper = document.getElementById('photo-wrapper');
+
+            var IG = new Instajam({
+                clientID: '4f9b5392c55b40f3baab4d4dee8bc749',
+            });
+
+            IG.media.search({lat:53.23, lng: -1.42, distance:100}, callback);
+        });
+        var callback = function (response) {
+            console.log(response);
+            if (response.meta.code === 200) {
+                showConnectionWarning(false);
+                response.data.forEach(displayMedia);
+            }
+            else {
+                showConnectionWarning(true);
+            }
+        };
+
+        var displayMedia = function (media) {
+            var elImg = document.createElement("img");
+            elImg.src = media.images.low_resolution.url;
+            elImg.height = media.images.low_resolution.height;
+            elImg.width = media.images.low_resolution.width;
+
+            var title = document.createTextNode("View ");
+            if (media.caption != null) {
+                title.appendData(media.caption.text);
+            }
+            title.appendData(" on Instagram");
+
+            var elLink = document.createElement("a");
+            elLink.href = media.link;
+            elLink.title = title.data;
+            elLink.appendChild(elImg);
+
+            photoWrapper.appendChild(elLink);
+        }
+
+        var showConnectionWarning = function(show)
+        {
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Photos near you</h1>
+    <div id="photo-wrapper">
+    </div>
+</body>
+</html>
