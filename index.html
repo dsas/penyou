@@ -26,19 +26,19 @@
         });
 
         var geoLocSuccessHandler = function(pos) {
-            requestNewPhotos(pos.coords.latitude, pos.coords.longitude);
+            requestNewPhotos(pos.coords.latitude, pos.coords.longitude, updateDisplay);
         }
 
         var geoLocFailHandler = function(posError) {
             alert(posError.message);
         }
 
-        var requestNewPhotos = function(lat, lng) {
+        var requestNewPhotos = function(lat, lng, callback) {
             var IG = new Instajam({
                 clientID: 'YOUR_CLIENT_ID_HERE',
             });
 
-            IG.media.search({lat:lat, lng: lng, distance:100}, updateDisplay);
+            IG.media.search({lat:lat, lng: lng, distance:100}, callback);
         }
 
         var updateDisplay = function (response) {
