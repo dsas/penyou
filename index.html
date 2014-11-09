@@ -7,13 +7,24 @@
     <script>
         'use strict';
 
-        var photoWrapper;
+        var photoWrapper, photoRange, loadingMsg;
 
         document.addEventListener("DOMContentLoaded", function() {
             // global.
             photoWrapper = document.getElementById('photo-wrapper');
+            photoRange = document.getElementById('range');
+            loadingMsg = document.getElementById('loading-msg');
+            photoRange.onchange = redisplay;
 
-            var currentPos, posError;
+            redisplay();
+        });
+
+        var redisplay = function()
+        {
+            var posError;
+
+            photoWrapper.innerHTML = '';
+            loadingMsg.style.display='block';
 
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(geoLocSuccessHandler,
@@ -23,7 +34,7 @@
                 posError = {message: 'Your browser does not support geo location, please upgrade.'};
                 geoLocFailHandler(posError);
             }
-        });
+        }
 
         var geoLocSuccessHandler = function(pos) {
             requestNewPhotos(pos.coords.latitude, pos.coords.longitude, updateDisplay);
@@ -34,15 +45,18 @@
         }
 
         var requestNewPhotos = function(lat, lng, callback) {
-            var IG = new Instajam({
-                clientID: 'YOUR_CLIENT_ID_HERE',
+            var distance, IG = new Instajam({
+                clientID: '4f9b5392c55b40f3baab4d4dee8bc749',
             });
 
-            IG.media.search({lat:lat, lng: lng, distance:100}, callback);
+            distance = range.value * 1000;
+
+            IG.media.search({lat:lat, lng: lng, distance: distance}, callback);
         }
 
         var updateDisplay = function (response) {
             console.log(response);
+            loadingMsg.style.display='none';
             if (response.meta.code === 200) {
                 showConnectionWarning(false);
                 response.data.forEach(displayMedia);
@@ -80,6 +94,14 @@
 
 <body>
     <h1>Photos near you</h1>
+    <div id="controls">
+        <label for="range">Distance (km)</label>
+        <!-- instagram max is 5km -->
+        <input id ="range" type="number" step="any" min="0.1" max="5" value="1" />
+    </div>
+    <p id="loading-msg">
+        Loading...
+    </p>
     <div id="photo-wrapper">
     </div>
 </body>
