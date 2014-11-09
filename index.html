@@ -6,17 +6,42 @@
     <script src="js/instajam/dist/instajam.js"></script>
     <script>
         'use strict';
+
         var photoWrapper;
+
         document.addEventListener("DOMContentLoaded", function() {
+            // global.
             photoWrapper = document.getElementById('photo-wrapper');
 
+            var currentPos, posError;
+
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(geoLocSuccessHandler,
+                    geoLocFailHandler);
+            }
+            else {
+                posError = {message: 'Your browser does not support geo location, please upgrade.'};
+                geoLocFailHandler(posError);
+            }
+        });
+
+        var geoLocSuccessHandler = function(pos) {
+            requestNewPhotos(pos.coords.latitude, pos.coords.longitude);
+        }
+
+        var geoLocFailHandler = function(posError) {
+            alert(posError.message);
+        }
+
+        var requestNewPhotos = function(lat, lng) {
             var IG = new Instajam({
-                clientID: '4f9b5392c55b40f3baab4d4dee8bc749',
+                clientID: 'YOUR_CLIENT_ID_HERE',
             });
 
-            IG.media.search({lat:53.23, lng: -1.42, distance:100}, callback);
-        });
-        var callback = function (response) {
+            IG.media.search({lat:lat, lng: lng, distance:100}, updateDisplay);
+        }
+
+        var updateDisplay = function (response) {
             console.log(response);
             if (response.meta.code === 200) {
                 showConnectionWarning(false);
